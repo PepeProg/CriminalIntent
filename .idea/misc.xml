@@ -5,6 +5,8 @@
       <map>
         <entry key="..\:/Users/vladg/Desktop/androidProj/CriminalIntent/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/vladg/Desktop/androidProj/CriminalIntent/app/src/main/res/layout/fragment_crime.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/vladg/Desktop/androidProj/CriminalIntent/app/src/main/res/layout/fragment_crime_list.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/vladg/Desktop/androidProj/CriminalIntent/app/src/main/res/layout/view_of_list.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>
