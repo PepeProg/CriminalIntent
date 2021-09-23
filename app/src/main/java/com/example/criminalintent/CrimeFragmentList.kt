@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,8 +36,20 @@ class CrimeFragmentList() : Fragment() {
 
     private inner class Holder(view: View): RecyclerView.ViewHolder(view) {  //Class, working with views
         private lateinit var crime: Crime
-        val titleText: TextView = itemView.findViewById(R.id.crime_title)
-        val dateText: TextView = itemView.findViewById(R.id.date_field)
+        private val titleText: TextView = itemView.findViewById(R.id.crime_title)
+        private val dateText: TextView = itemView.findViewById(R.id.date_field)
+        private lateinit var policeButton: Button
+        init {
+            itemView.setOnClickListener {
+                Toast.makeText(context, "${crime.title}", Toast.LENGTH_SHORT).show()
+            }
+            if (itemView.id == R.id.danger_view_of_list) {
+                policeButton = itemView.findViewById(R.id.police_button)
+                policeButton.setOnClickListener {
+                    Toast.makeText(context, "The police is coming", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
         fun bind(crime: Crime) {
             this.crime = crime
             titleText.text = this.crime.title
@@ -46,7 +60,11 @@ class CrimeFragmentList() : Fragment() {
     private inner class HolderAdapter(val crimeList: List<Crime>)
         :RecyclerView.Adapter<Holder>(){
             override fun onCreateViewHolder(parent: ViewGroup, viewType:Int): Holder {
-                val view = layoutInflater.inflate(R.layout.view_of_list, parent, false)
+                val viewId = if (viewType == 0)
+                    R.layout.view_of_list
+                else
+                    R.layout.danger_view_of_list
+                val view = layoutInflater.inflate(viewId, parent, false)
                 return Holder(view)
             }
 
@@ -56,6 +74,12 @@ class CrimeFragmentList() : Fragment() {
             }
 
             override fun getItemCount() = crimeList.size
+
+            override fun getItemViewType(position: Int): Int {
+                if (crimeList[position].isDangerous)
+                    return 1
+                return 0
+            }
         }
 
     private fun updateUI() {

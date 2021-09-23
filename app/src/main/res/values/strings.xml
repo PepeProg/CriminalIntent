@@ -4,5 +4,6 @@
     <string name="title_label">Title</string>
     <string name="details_label">Details</string>
     <string name="solved_label">Solved</string>
+    <string name="call_the_police">Call the police</string>
 
 </resources>
