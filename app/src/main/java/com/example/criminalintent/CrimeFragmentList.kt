@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.DateFormat
 
 
 class CrimeFragmentList() : Fragment() {
@@ -39,6 +41,7 @@ class CrimeFragmentList() : Fragment() {
         private val titleText: TextView = itemView.findViewById(R.id.crime_title)
         private val dateText: TextView = itemView.findViewById(R.id.date_field)
         private lateinit var policeButton: Button
+        private val isSolvedImage: ImageView = itemView.findViewById(R.id.crime_is_solved)
         init {
             itemView.setOnClickListener {
                 Toast.makeText(context, "${crime.title}", Toast.LENGTH_SHORT).show()
@@ -53,7 +56,14 @@ class CrimeFragmentList() : Fragment() {
         fun bind(crime: Crime) {
             this.crime = crime
             titleText.text = this.crime.title
-            dateText.text = this.crime.date.toString()
+            //dateText.text = this.crime.date.toString()
+            val formatDate = DateFormat.getInstance()
+            dateText.text = formatDate.format(this.crime.date)
+            isSolvedImage.visibility =
+                if (this.crime.isSolved)
+                    View.VISIBLE
+                else
+                    View.GONE
         }
     }
 
