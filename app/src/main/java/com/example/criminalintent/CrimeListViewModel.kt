@@ -3,17 +3,7 @@ package com.example.criminalintent
 import androidx.lifecycle.ViewModel
 
 class CrimeListViewModel: ViewModel() {
-    val crimeList = mutableListOf<Crime>()
+    private val crimeRepository = CrimeRepository.get() //getting repository
+    val crimeListLiveData = crimeRepository.getCrimes()
 
-    init {
-        for (i in 1..100) {
-            val crime = Crime()
-            crime.apply {
-                title = "Crime number $i"
-                isSolved = i % 2 == 1
-                isDangerous = i % 10 == 0
-            }
-            crimeList += crime
-        }
-    }
 }

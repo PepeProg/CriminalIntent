@@ -1,6 +1,7 @@
 package com.example.criminalintent
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,20 +10,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.text.DateFormat
 
+private const val TAG = "CrimeListFragment"
 
-class CrimeFragmentList() : Fragment() {
+class CrimeFragmentList : Fragment() {
     private lateinit var recyclerView: RecyclerView
-    val listViewModel: CrimeListViewModel by lazy {
+    private var adapter = HolderAdapter(emptyList())  //initializing an adapter with empty list, later will filled in data from database
+    private val listViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -32,8 +32,21 @@ class CrimeFragmentList() : Fragment() {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
         recyclerView = view.findViewById(R.id.crime_fragment_recycler) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
-        updateUI()
+        recyclerView.adapter = adapter
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        listViewModel.crimeListLiveData.observe(  //creating an observer for getting data from database
+            viewLifecycleOwner,                   //matching observing with fragment's view lifecycle (Fragment implements LifecycleOwner)
+            Observer {crimes ->
+                crimes?.let{
+                    Log.i(TAG, "Got crimes")
+                    updateUI(crimes)
+                }
+            }
+        )
     }
 
     private inner class Holder(view: View): RecyclerView.ViewHolder(view) {  //Class, working with views
@@ -56,7 +69,6 @@ class CrimeFragmentList() : Fragment() {
         fun bind(crime: Crime) {
             this.crime = crime
             titleText.text = this.crime.title
-            //dateText.text = this.crime.date.toString()
             val formatDate = DateFormat.getInstance()
             dateText.text = formatDate.format(this.crime.date)
             isSolvedImage.visibility =
@@ -86,15 +98,15 @@ class CrimeFragmentList() : Fragment() {
             override fun getItemCount() = crimeList.size
 
             override fun getItemViewType(position: Int): Int {
-                if (crimeList[position].isDangerous)
-                    return 1
+//                if (crimeList[position].isDangerous)
+//                    return 1
                 return 0
             }
         }
 
-    private fun updateUI() {
-        recyclerView.adapter = HolderAdapter(listViewModel.crimeList)
-
+    private fun updateUI(crimeList: List<Crime>) {
+        adapter = HolderAdapter(crimeList)
+        recyclerView.adapter = adapter
     }
 
     companion object {
