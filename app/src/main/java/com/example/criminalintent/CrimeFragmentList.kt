@@ -1,5 +1,6 @@
 package com.example.criminalintent
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,15 +15,32 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import java.text.DateFormat
+import java.util.*
 
-private const val TAG = "CrimeListFragment"
+private const val TAG = "CrimeFragmentList"
 
 class CrimeFragmentList : Fragment() {
+    /**
+     * Required interface, which allows creating CrimeFragments
+     */
+    interface Callbacks {               //Activity must implement this method, to use creating new Fragments
+        fun onCrimeSelected(uuid: UUID)
+    }
+
+
+    private var callbacks: Callbacks? = null
     private lateinit var recyclerView: RecyclerView
-    private var adapter = HolderAdapter(emptyList())  //initializing an adapter with empty list, later will filled in data from database
+    private var adapter = HolderAdapter()  //initializing an adapter with empty list, later will filled in with data from database
     private val listViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks?
     }
 
     override fun onCreateView(
@@ -42,8 +60,7 @@ class CrimeFragmentList : Fragment() {
             viewLifecycleOwner,                   //matching observing with fragment's view lifecycle (Fragment implements LifecycleOwner)
             Observer {crimes ->
                 crimes?.let{
-                    Log.i(TAG, "Got crimes")
-                    updateUI(crimes)
+                    updateUI(it)
                 }
             }
         )
@@ -57,7 +74,7 @@ class CrimeFragmentList : Fragment() {
         private val isSolvedImage: ImageView = itemView.findViewById(R.id.crime_is_solved)
         init {
             itemView.setOnClickListener {
-                Toast.makeText(context, "${crime.title}", Toast.LENGTH_SHORT).show()
+                callbacks?.onCrimeSelected(crime.id)    //call activity-overriding function, which will do everything
             }
             if (itemView.id == R.id.danger_view_of_list) {
                 policeButton = itemView.findViewById(R.id.police_button)
@@ -66,6 +83,22 @@ class CrimeFragmentList : Fragment() {
                 }
             }
         }
+
+        /*
+        This method can work, but, using it, fragment matches to certain Activity, so in
+        this case using interface Callbacks, which encapsulate this logic, will be better
+
+        fun onClick(view: View) {
+            val fragment = CrimeFragment.newInstance(crime.id)
+            val fM = activity.supportFragmentManager
+            fM.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit()
+
+        }
+        */
+
+
         fun bind(crime: Crime) {
             this.crime = crime
             titleText.text = this.crime.title
@@ -79,8 +112,8 @@ class CrimeFragmentList : Fragment() {
         }
     }
 
-    private inner class HolderAdapter(val crimeList: List<Crime>)
-        :RecyclerView.Adapter<Holder>(){
+    private inner class HolderAdapter()   //List adapter can update only changed data
+        :ListAdapter<Crime,Holder>(DiffCallBack()){
             override fun onCreateViewHolder(parent: ViewGroup, viewType:Int): Holder {
                 val viewId = if (viewType == 0)
                     R.layout.view_of_list
@@ -91,22 +124,37 @@ class CrimeFragmentList : Fragment() {
             }
 
             override fun onBindViewHolder(holder: Holder, position: Int) {
-                val crime = crimeList[position]
+                val crime = getItem(position)
                 holder.bind(crime)
             }
-
-            override fun getItemCount() = crimeList.size
 
             override fun getItemViewType(position: Int): Int {
 //                if (crimeList[position].isDangerous)
 //                    return 1
                 return 0
             }
+
         }
 
+    private class DiffCallBack(): DiffUtil.ItemCallback<Crime>() {       //helps ListAdapter to compare data
+        override fun areItemsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Crime, newItem: Crime): Boolean {
+            return (oldItem.title == newItem.title) &&
+                    (oldItem.isSolved == newItem.isSolved) &&
+                    (oldItem.date == newItem.date)
+        }
+    }
+
     private fun updateUI(crimeList: List<Crime>) {
-        adapter = HolderAdapter(crimeList)
-        recyclerView.adapter = adapter
+        adapter.submitList(crimeList)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 
     companion object {
