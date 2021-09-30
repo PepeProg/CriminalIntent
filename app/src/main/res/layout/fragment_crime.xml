@@ -24,12 +24,25 @@
         style="?android:listSeparatorTextViewStyle"
         android:text="@string/details_label">
     </TextView>
-    <Button
-        android:id="@+id/date_button"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Wed Nov 14 11:56 EST2018">
-    </Button>
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/date_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text="Wed Nov 14"
+            android:layout_weight="1"
+            android:layout_margin="5dp"/>
+        <Button
+            android:id="@+id/time_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:text = "11:00 PM"
+            android:layout_weight="1"
+            android:layout_margin="5dp"/>
+    </LinearLayout>
     <CheckBox
         android:id="@+id/is_solved_checkbox"
         android:layout_width="match_parent"

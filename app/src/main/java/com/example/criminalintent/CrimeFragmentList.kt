@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 private const val TAG = "CrimeFragmentList"
@@ -102,7 +102,7 @@ class CrimeFragmentList : Fragment() {
         fun bind(crime: Crime) {
             this.crime = crime
             titleText.text = this.crime.title
-            val formatDate = DateFormat.getInstance()
+            val formatDate = SimpleDateFormat.getInstance()
             dateText.text = formatDate.format(this.crime.date)
             isSolvedImage.visibility =
                 if (this.crime.isSolved)
