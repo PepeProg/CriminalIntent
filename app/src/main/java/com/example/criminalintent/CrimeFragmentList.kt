@@ -2,10 +2,9 @@ package com.example.criminalintent
 
 import android.content.Context
 import android.os.Bundle
+import android.text.format.DateFormat
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -33,6 +32,7 @@ class CrimeFragmentList : Fragment() {
 
     private var callbacks: Callbacks? = null
     private lateinit var recyclerView: RecyclerView
+    private lateinit var emptyListText: TextView
     private var adapter = HolderAdapter()  //initializing an adapter with empty list, later will filled in with data from database
     private val listViewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
@@ -43,12 +43,18 @@ class CrimeFragmentList : Fragment() {
         callbacks = context as Callbacks?
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
         recyclerView = view.findViewById(R.id.crime_fragment_recycler) as RecyclerView
+        emptyListText = view.findViewById(R.id.empty_list_text) as TextView
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = adapter
         return view
@@ -64,6 +70,23 @@ class CrimeFragmentList : Fragment() {
                 }
             }
         )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_crime_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.new_crime -> {
+                val crime = Crime()
+                listViewModel.addCrime(crime)
+                callbacks?.onCrimeSelected(crime.id)
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     private inner class Holder(view: View): RecyclerView.ViewHolder(view) {  //Class, working with views
@@ -149,6 +172,9 @@ class CrimeFragmentList : Fragment() {
     }
 
     private fun updateUI(crimeList: List<Crime>) {
+        if (crimeList.isEmpty())
+            emptyListText.visibility = View.VISIBLE
+        else emptyListText.visibility = View.INVISIBLE
         adapter.submitList(crimeList)
     }
 

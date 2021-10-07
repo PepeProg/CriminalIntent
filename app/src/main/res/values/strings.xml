@@ -5,5 +5,16 @@
     <string name="details_label">Details</string>
     <string name="solved_label">Solved</string>
     <string name="call_the_police">Call the police</string>
-
+    <string name="new_crime">New Crime</string>
+    <string name="save_button">Save</string>
+    <string name="suspect_button">Choose suspect</string>
+    <string name="report_button">Send report</string>
+    <string name="crime_report">%1$s! The crime was discovered on %2$s. %3$s, and %4$s</string>
+    <string name="crime_report_solved">The case is solved</string>
+    <string name="crime_report_unsolved">The case is not solved</string>
+    <string name="crime_report_no_suspect">there is no suspect.</string>
+    <string name="crime_report_suspect">the suspect is %s.</string>
+    <string name="crime_report_subject">CriminalIntent Crime Report</string>
+    <string name="send_report">Send crime report via</string>
+    <string name="call_suspect">call suspect</string>
 </resources>
