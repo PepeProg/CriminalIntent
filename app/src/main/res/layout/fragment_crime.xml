@@ -23,12 +23,14 @@
                 android:layout_height="80dp"
                 android:cropToPadding="true"
                 android:scaleType="centerInside"
-                android:background="@android:color/darker_gray"/>
+                android:background="@android:color/darker_gray"
+                android:contentDescription="@string/crime_photo_no_image_description"/>
             <ImageButton
                 android:id="@+id/camera_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_camera"/>
+                android:src="@android:drawable/ic_menu_camera"
+                android:contentDescription="@string/crime_photo_button_description"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
@@ -97,32 +99,33 @@
         android:layout_height="wrap_content"
         android:text="@string/suspect_button"
         android:layout_margin="5dp"/>
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
+        <View
+            android:id="@+id/second_separator"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"/>
         <Button
             android:id="@+id/report_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/report_button"
             android:layout_margin="5dp"
-            android:layout_weight="1"/>
+            android:layout_alignParentStart="true"
+            android:layout_alignEnd="@id/second_separator"
+            android:text="@string/report_button"/>
+
         <Button
             android:id="@+id/call_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/call_suspect"
-            android:layout_margin="5dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/save_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
-        android:layout_marginEnd="5dp"
-        android:layout_gravity="end"
-        android:text="@string/save_button"/>
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_alignTop="@id/report_button"
+            android:layout_alignBottom="@id/report_button"
+            android:layout_toEndOf="@+id/second_separator"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="@string/call_suspect"/>
+    </RelativeLayout>
 </LinearLayout>

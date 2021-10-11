@@ -26,5 +26,9 @@ class CrimeFragmentViewModel() : ViewModel(){
         crimeRepository.updateCrime(crime)
     }
 
+    fun deleteCrime(crime: Crime) {
+        crimeRepository.deleteCrime(crime)
+    }
+
     fun getPhotoFile(crime: Crime) = crimeRepository.getPhotoFile(crime)
 }

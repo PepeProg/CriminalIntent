@@ -20,10 +20,7 @@ import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,6 +35,7 @@ import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
+
 
 private const val CRIME_ID = "crimeId"
 private const val TAG = "CrimeFragment"
@@ -54,7 +52,6 @@ class CrimeFragment : Fragment() {
     private lateinit var dateButton: Button
     private lateinit var timeButton: Button
     private lateinit var checkBox: CheckBox
-    private lateinit var saveButton: Button
     private lateinit var reportButton: Button
     private lateinit var suspectButton: Button
     private lateinit var callButton: Button
@@ -114,9 +111,30 @@ class CrimeFragment : Fragment() {
         )
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_crime, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.save_crime_menu_item->{
+                parentFragmentManager.popBackStack()
+                true
+            }
+            R.id.delete_crime_menu_item->{
+                crimeFragmentViewModel.deleteCrime(crime)
+                parentFragmentManager.popBackStack()
+                true
+            }
+            else-> super.onContextItemSelected(item)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         crime = Crime()
         val uuid: UUID = arguments?.get(CRIME_ID) as UUID
         crimeFragmentViewModel.loadCrime(uuid)
@@ -133,7 +151,6 @@ class CrimeFragment : Fragment() {
         dateButton = view.findViewById(R.id.date_button) as Button
         timeButton = view.findViewById(R.id.time_button) as Button
         checkBox = view.findViewById(R.id.is_solved_checkbox) as CheckBox
-        saveButton = view.findViewById(R.id.save_button) as Button
         reportButton = view.findViewById(R.id.report_button) as Button
         suspectButton = view.findViewById(R.id.suspect_button) as Button
         callButton = view.findViewById(R.id.call_button) as Button
@@ -201,10 +218,6 @@ class CrimeFragment : Fragment() {
             TimePickerFragment.newInstance(crime.date).apply {
                 show(this@CrimeFragment.parentFragmentManager, DIALOG_TIME)
             }
-        }
-
-        saveButton.setOnClickListener {
-            parentFragmentManager.popBackStack()
         }
 
         reportButton.setOnClickListener {
@@ -364,6 +377,7 @@ class CrimeFragment : Fragment() {
         liveBitmap.observe(viewLifecycleOwner) {
             photoImage.setImageBitmap(it)
             photoImage.rotation = getPhotoOrientation()
+            photoImage.contentDescription = getString(R.string.crime_photo_image_description)
         }
         needPhotoUpdate()
     }
